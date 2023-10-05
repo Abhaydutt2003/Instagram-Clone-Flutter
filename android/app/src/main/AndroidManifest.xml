@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- TODO add package name and do not start with com.example-->
     <application
         android:label="instagram_flutter"
         android:name="${applicationName}"
