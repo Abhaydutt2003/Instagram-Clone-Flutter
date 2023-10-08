@@ -3,39 +3,45 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_flutter/resources/storage_methods.dart';
 
-
-class AuthMethods{
-
+class AuthMethods {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   //sign up user
-  Future<String>signUpUser({
-    required String email,
-    required String password,
-    required String username,
-    required String bio,
-    //required Uint8List file
-  })async{
+  Future<String> signUpUser(
+      {required String email,
+      required String password,
+      required String username,
+      required String bio,
+      required Uint8List file}) async {
     String res = "Some error occurred";
-    try{
-      if(email.isNotEmpty || password.isNotEmpty || username.isNotEmpty || bio.isNotEmpty ){
+    try {
+      if (email.isNotEmpty ||
+          password.isNotEmpty ||
+          username.isNotEmpty ||
+          bio.isNotEmpty) {
         //register user
-        UserCredential cred = await _auth.createUserWithEmailAndPassword(email: email, password: password);
-        //store user in db
+        UserCredential cred = await _auth.createUserWithEmailAndPassword(
+            email: email, password: password);
         print(cred.user!.uid);
+        //store pic in storage
+        String photoUrl = await StorageMethods()
+            .uploadImageToStorage('profilePics', file, false);
+        //store user in db
         await _firestore.collection('users').doc(cred.user!.uid).set({
-          'username':username,
-          'password':password,
-          'email':email,
-          'bio':bio,
-          'followers':[],
-          'following':[]
+          'username': username,
+          'password': password,
+          'email': email,
+          'bio': bio,
+          'followers': [],
+          'following': [],
+          'photoUrl':photoUrl
         });
         res = "success";
       }
-    }catch(error){
+    } catch (error) {
       res = error.toString();
     }
     return res;
