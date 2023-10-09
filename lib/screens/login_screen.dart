@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:instagram_flutter/utils/colors.dart';
+import 'package:instagram_flutter/utils/utils.dart';
 import 'package:instagram_flutter/widgets/text_filed_input.dart';
+import 'package:instagram_flutter/resources/auth_methods.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -13,11 +15,27 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
   @override
   void dispose() {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+  }
+
+  void loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().logInUser(
+        email: _emailController.text, password: _passwordController.text);
+    if (res != 'success') {
+      showSnackBar(res, context);
+    }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -54,16 +72,24 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 24),
               //button login
               InkWell(
-                child : Container(
-                  width: double.infinity,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: const ShapeDecoration(
-                      color: blueColor,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(4)))),
-                  child: const Text('Log In'))
-              ),
+                  onTap: loginUser,
+                  child: Container(
+                    width: double.infinity,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    decoration: const ShapeDecoration(
+                        color: blueColor,
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(4)))),
+                    child: _isLoading
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: primaryColor,
+                            ),
+                          )
+                        : const Text('Log In'),
+                  )),
               const SizedBox(height: 12),
               Flexible(flex: 2, child: Container()),
               //transitioning to sign up
@@ -75,14 +101,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text("Don't have an account? "),
                   ),
                   GestureDetector(
-                    onTap: (){},
-                    child : Container(
-                            padding: const EdgeInsets.symmetric(vertical: 8),
-                            child: const Text("Sign Up!",
-                            style: TextStyle(fontWeight: FontWeight.bold))  
-                  )
-                  )
-                ], 
+                      onTap: () {},
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          child: const Text("Sign Up!",
+                              style: TextStyle(fontWeight: FontWeight.bold))))
+                ],
               )
             ],
           )),

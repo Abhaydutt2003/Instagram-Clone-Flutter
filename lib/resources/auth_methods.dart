@@ -32,7 +32,7 @@ class AuthMethods {
         //store user in db
         await _firestore.collection('users').doc(cred.user!.uid).set({
           'username': username,
-          'password': password,
+          // 'password': password,
           'email': email,
           'bio': bio,
           'followers': [],
@@ -43,6 +43,26 @@ class AuthMethods {
       }
     } catch (error) {
       res = error.toString();
+    }
+    return res;
+  }
+
+  //log in the user
+  Future<String> logInUser({
+    required String email,
+    required String password
+  }) async {
+    String res = "Some error occured";
+
+    try{
+      if(email.isNotEmpty && password.isNotEmpty ){
+        await _auth.signInWithEmailAndPassword(email: email, password: password);
+        res = "success";
+      }else{
+        res = "Please enter all the fields";
+      }
+    }catch(error){
+      return error.toString();
     }
     return res;
   }
