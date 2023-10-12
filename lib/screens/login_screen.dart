@@ -38,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
       showSnackBar(res, context);
     }else{
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: ((context) => const ReponsiveLayout(
+          builder: ((context) => const ResponsiveLayout(
               mobileScreenLayout: MobileScreenLayout(),
               webScreenLayout: WebScreenLayout()))));
     }
